@@ -17,7 +17,7 @@ const errorHandler = require('./helpers/errorHandler');
 const { Chat, Message, Alert } = require('./helpers/db');
 require('./helpers/sockets')(io);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 const isLocal = !process.env.PORT;
 
 app.use('/cleanup', async (req, res) => {
