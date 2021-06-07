@@ -1,0 +1,7 @@
+{
+    "secret": "sdfjkdfngkd7898fdsfsdf^*($%^*$",
+    "connectionString": "mongodb+srv://arnav:arnavozil@cluster0.laaif.mongodb.net/events?retryWrites=true&w=majority",
+    "localConnectionString": "mongodb+srv://arnav:arnavozil@cluster0.laaif.mongodb.net/support?retryWrites=true&w=majority",
+    "frontendClient": "FRONTEND_WEBSITE_URL",
+    "localFrontendClient": "http://localhost:3000"
+}
