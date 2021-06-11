@@ -22,10 +22,11 @@ module.exports = io => {
         
         socket.on('SEND_MESSAGE', async params => {
             const { parentChat } = params;
-            console.log(params);
-            createMessage(params);
-            userChats.push(params);
-            io.emit(`${parentChat}_MESSAGE_RECEIVED`, params);
+            if(parentChat){
+                createMessage(params);
+                userChats.push(params);
+                io.emit(`${parentChat}_MESSAGE_RECEIVED`, params);
+            };
         });
 
         socket.on('ALL_MESSAGES', async ({ parentChat }) => {
@@ -54,13 +55,21 @@ module.exports = io => {
 
         socket.on('disconnect', async () => {
             const chat = await findChatBySocket(socket.id);
-            if(chat){
+            if(chat?.id){
                 const { id } = chat;
                 const { chat: c, short } = await endChat(id);
                 const chats = await getChatById();
                 chats.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
                 io.emit('INCOMING_CHAT', chats);
                 io.emit(id + '_CHAT_FINISHED', { isReviewed: c.isReviewed, short });
+                const params = {
+                    clientId: id, parentChat: id,
+                    by: 'admin', content: 'User have left the chat',
+                    createdAt: new Date()
+                };
+                createMessage(params);
+                userChats.push(params);
+                io.emit(`${parentChat}_MESSAGE_RECEIVED`, params);
             }
             if(!userId) return;
             await Executive.findByIdAndUpdate(userId, {
