@@ -28,9 +28,18 @@ const feedReview = (req, res, next) => {
     }).catch(next);
 };
 
+const byId = (req, res, next) => {
+    chatServices.byId(req.body.id).then(data => {
+        res.json({
+            message: 'Chat fetched successfully',
+            ...data
+        });
+    }).catch(next);
+};
 
 router.post('/create', initiateChat);
 router.post('/join', joinChat);
 router.post('/review', feedReview);
+router.post('/byId', byId);
 
 module.exports = router;

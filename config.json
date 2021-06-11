@@ -1,7 +1,8 @@
 {
     "secret": "sdfjkdfngkd7898fdsfsdf^*($%^*$",
-    "connectionString": "mongodb+srv://arnav:arnavozil@cluster0.laaif.mongodb.net/events?retryWrites=true&w=majority",
+    "connectionString": "mongodb+srv://arnav:arnavozil@cluster0.laaif.mongodb.net/support?retryWrites=true&w=majority",
     "localConnectionString": "mongodb+srv://arnav:arnavozil@cluster0.laaif.mongodb.net/support?retryWrites=true&w=majority",
     "frontendClient": "ec2-13-127-130-219.ap-south-1.compute.amazonaws.com",
-    "localFrontendClient": "ec2-13-127-130-219.ap-south-1.compute.amazonaws.com"
+    "localFrontendClient": "ec2-13-127-130-219.ap-south-1.compute.amazonaws.com",
+    "homeFrontendClient": "http://localhost:3000"
 }

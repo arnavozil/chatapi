@@ -6,7 +6,7 @@ const io = require('socket.io')(http, {
     }
 });
 const cookieParser = require('cookie-parser');
-const { frontendClient, localFrontendClient } = require('./config.json');
+const { frontendClient, localFrontendClient, homeFrontendClient } = require('./config.json');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('./helpers/jwt');
@@ -19,6 +19,7 @@ require('./helpers/sockets')(io);
 
 const PORT = process.env.PORT || 4000;
 const isLocal = !process.env.PORT;
+const isHome = process.env.NODE_ENV === 'home';
 
 app.use('/cleanup', async (req, res) => {
     await Chat.deleteMany({});
@@ -40,7 +41,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: isLocal ? localFrontendClient : frontendClient,
+    origin: isHome ? homeFrontendClient : isLocal ? localFrontendClient : frontendClient,
     credentials: true
 }));
 

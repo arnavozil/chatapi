@@ -22,6 +22,7 @@ module.exports = io => {
         
         socket.on('SEND_MESSAGE', async params => {
             const { parentChat } = params;
+            console.log(params);
             createMessage(params);
             userChats.push(params);
             io.emit(`${parentChat}_MESSAGE_RECEIVED`, params);
@@ -55,7 +56,10 @@ module.exports = io => {
             const chat = await findChatBySocket(socket.id);
             if(chat){
                 const { id } = chat;
-                const { chat: c, short } = await endChat(chat.id);
+                const { chat: c, short } = await endChat(id);
+                const chats = await getChatById();
+                chats.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+                io.emit('INCOMING_CHAT', chats);
                 io.emit(id + '_CHAT_FINISHED', { isReviewed: c.isReviewed, short });
             }
             if(!userId) return;

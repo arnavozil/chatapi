@@ -1,7 +1,6 @@
 const { oid } = require('../helpers/middlewares');
-const { Chat, Executive } = require("../helpers/db")
+const { Chat, Executive, Message } = require("../helpers/db")
 const get = require('lodash/get');
-const { findLastMessage } = require('../messages/services');
 const moment = require('moment');
 const { randomWord } = require('../helpers/utils');
 
@@ -18,9 +17,17 @@ const initiateChat = async ({chatTitle: title, createdAt}) => {
     return { chat: savedChat };
 };
 
+const byId = async id => {
+    const chat = await Chat.findOne({ referenceId: id[0] === '#' ? id.substring(1) : id });
+    const messages = await Message.find({ parentChat: chat.id });
+    return { chat, messages };
+};
+
 const getChatById = async (id, exId) => {
     if(!id && !exId){
-        return await Chat.find({ response: 'started' });
+        return await Chat.find({ $or: [ { response: 'started' }, {
+            $and: [{ answeredBy: '' }, { response: 'ended' }]
+        }] });
         // return await findLastMessage(chats);
     };
     const query = { $or: [] };
@@ -28,11 +35,12 @@ const getChatById = async (id, exId) => {
     if(exId) query['$or'].push({ answeredBy: oid(exId) });
     return await Chat.find(query);
     // return await findLastMessage(chats);
-};
+};  
 
 const joinChat = async ({chatId, userId}) => {
     const chat = await Chat.findById(chatId);
-    if(get(chat, 'response', null) !== 'started') throw 'This query is either resolved or being resolved. Please choose a different query';
+    if(get(chat, 'answeredBy', '') !== '' && get(chat, 'response') === 'accepted') 
+        throw 'This query is either resolved or being resolved. Please choose a different query';
     await Chat.findByIdAndUpdate(chatId, {
         $set: { answeredBy: userId, response: 'accepted' }
     });
@@ -80,6 +88,6 @@ module.exports = {
     joinChat,
     endChat,
     feedReview,
-    setSocket,
+    setSocket, byId,
     findChatBySocket
 };
