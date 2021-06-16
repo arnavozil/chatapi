@@ -7,6 +7,7 @@ const schema = new Schema({
     username: { type: String, required: true, unique: true },
     answered: { type: Number, default: 0 },
     createdAt: { type: Object, default: new Date() },
+    name: { type: String, default: '' },
     satisfied: { type: Number, default: 0 },
     dissatisfied: { type: Number, default: 0 },
     status: { type: String, default: 'offline' } // enum [online, offline, onchat]

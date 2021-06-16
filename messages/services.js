@@ -8,7 +8,7 @@ const createMessage = async params => {
 const retrieveAll = async (parentChat) => {
     const chat = await Chat.findById(parentChat);
     const messages = await Message.find({ parentChat });
-    return [messages, chat?.response !== 'ended', chat];
+    return [messages, (chat && chat.response !== 'ended'), chat];
 };
 
 const updateMessages = async (messages = []) => {
@@ -22,11 +22,14 @@ const findLastMessage = chats => Promise.all(chats.map(async chat => {
     const { response, title, createdAt, id, answeredBy } = chat;
     if(chat.response === 'started') return chat;
     const message = await Message
-        .find({ parentChat: id })
+        .find({ $and: [
+            { parentChat: id },
+            { by: { $ne: 'admin' } }
+        ] })
         .sort({ _id: -1 })
         .limit(1);
-    const { content, by } = (message[0] || {});
-    return { response, title, id, createdAt, lastMessage: { content, by }, answeredBy };
+    const { content, by, createdAt: at } = (message[0] || {});
+    return { response, title, id, createdAt, lastMessage: { content, by, at }, answeredBy };
 }));
 
 module.exports = {

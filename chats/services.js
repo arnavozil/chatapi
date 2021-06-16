@@ -1,6 +1,7 @@
 const { oid } = require('../helpers/middlewares');
 const { Chat, Executive, Message } = require("../helpers/db")
 const get = require('lodash/get');
+const { findLastMessage } = require('./../messages/services');
 const moment = require('moment');
 const { randomWord } = require('../helpers/utils');
 
@@ -34,8 +35,25 @@ const getChatById = async (id, exId) => {
     if(id) query['$or'].push({ _id: oid(id) });
     if(exId) query['$or'].push({ answeredBy: oid(exId) });
     return await Chat.find(query);
-    // return await findLastMessage(chats);
 };  
+
+const findChatAndLastMessages = async exId => {
+    const chats = await Chat.find({
+        $or: [ { 
+            response: 'started' 
+        }, { 
+            $and: [ { answeredBy: '' }, { response: 'ended' } ] 
+        }, {
+            answeredBy: exId
+        } ]
+    });
+    const res = {};
+    const withMessages = await findLastMessage(chats);
+    withMessages.forEach(({ id, lastMessage }) => {
+        res[id] = lastMessage;
+    });
+    return res;
+}
 
 const joinChat = async ({chatId, userId}) => {
     const chat = await Chat.findById(chatId);
@@ -89,5 +107,6 @@ module.exports = {
     endChat,
     feedReview,
     setSocket, byId,
-    findChatBySocket
+    findChatBySocket,
+    findChatAndLastMessages
 };

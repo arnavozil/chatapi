@@ -45,8 +45,18 @@ const create = async params => {
 
 const findFreeExecutives = async () => await Executive.find({ status: 'online' })
 
+const updateExecutive = async ({ name, newPassword, id }) => {
+    const update = {};
+    if(name) update.name = name;
+    if(newPassword) update.hash = bcrypt.hashSync(newPassword, 10);
+
+    return await Executive.findByIdAndUpdate(id, {
+        $set: update
+    });
+}
+
 module.exports = {
     authenticate,
-    create,
+    create, updateExecutive,
     findFreeExecutives
 };

@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { validateChanges } = require('../helpers/middlewares');
 const router = Router();
 const executiveServices = require('./services');
 
@@ -31,9 +32,18 @@ const register = (req, res, next) => {
     }).catch(err => next(err));
 };
 
+const updateExecutive = (req, res, next) => {
+    executiveServices.updateExecutive({ ...req.body }).then(() => {
+        res.json({
+            message: 'All changes are saved successfully'
+        });
+    }).catch(next);
+};
+
 
 // routes
 router.post('/authenticate', authenticate);
 router.post('/register', register);
+router.put('/update', validateChanges, updateExecutive);
 
 module.exports = router;

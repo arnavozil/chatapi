@@ -10,6 +10,8 @@ const jwt = () => expressJwt({
         // all the public routes
         '/executives/authenticate',
         '/executives/register',
+        '/executives',
+        '/chats', '/messages'
     ]
 });
 

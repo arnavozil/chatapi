@@ -1,4 +1,4 @@
-const { getChatById, endChat, setSocket, findChatBySocket } = require("../chats/services");
+const { getChatById, endChat, setSocket, findChatBySocket, findChatAndLastMessages } = require("../chats/services");
 const { createMessage, retrieveAll, updateMessages } = require("../messages/services");
 const { Executive } = require("./db");
 
@@ -43,6 +43,11 @@ module.exports = io => {
             io.emit(chatId + '_CHAT_FINISHED', { isReviewed: chat.isReviewed, short });
         });
 
+        socket.on('FIND_LAST_EVENTS', async ({ executiveId }) => {
+            const chats = await findChatAndLastMessages(executiveId);
+            io.emit(executiveId + '_LAST_EVENTS', chats);
+        });
+
         socket.on('LAST_MESSAGE', ({
             parentChat, content, by, at, highlight = false
         }) => io.emit(`${parentChat}_LAST_MESSAGE`, {
@@ -55,8 +60,9 @@ module.exports = io => {
 
         socket.on('disconnect', async () => {
             const chat = await findChatBySocket(socket.id);
-            if(chat?.id){
+            if(chat){
                 const { id } = chat;
+                if(!id) return;
                 const { chat: c, short } = await endChat(id);
                 const chats = await getChatById();
                 chats.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
