@@ -22,12 +22,13 @@ const isLocal = !process.env.PORT;
 const isHome = process.env.NODE_ENV === 'home';
 
 app.use('/cleanup', async (req, res) => {
-    await Chat.deleteMany({});
-    await Message.deleteMany({});
-    await Alert.deleteMany({});
-    const titles = '0123456789abcdef';
-    const docs = titles.split('').map(t => ({ title: t, createdAt: new Date() }));
+    // await Chat.deleteMany({});
+    // await Message.deleteMany({});
+    // await Alert.deleteMany({});
+    // const titles = '0123456789abcdef';
+    // const docs = titles.split('').map(t => ({ title: t, createdAt: new Date() }));
     // await Chat.insertMany(docs);
+    await Message.deleteMany({ content: 'User have left the chat' });
     res.send('cleanup complete');
 });
 

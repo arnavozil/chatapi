@@ -33,7 +33,7 @@ module.exports = io => {
             const [allMessages, isAlive, chat] = await retrieveAll(parentChat);
             userChats = allMessages;
             if(!isAlive) io.emit(parentChat + '_CHAT_FINISHED', { isReviewed: chat.isReviewed });
-            io.emit(parentChat + '_ALL_MESSAGES', userChats);
+            io.emit(parentChat + '_ALL_MESSAGES', [userChats, isAlive]);
         });
 
         socket.on('SET_USER_SOCKET', async ({ chatId }) => await setSocket(chatId, socket.id));
@@ -60,9 +60,9 @@ module.exports = io => {
 
         socket.on('disconnect', async () => {
             const chat = await findChatBySocket(socket.id);
-            if(chat){
-                const { id } = chat;
-                if(!id) return;
+            if(chat && chat.response !== 'ended'){
+                const { id, response } = chat;
+                if(!id || response === 'ended') return;
                 const { chat: c, short } = await endChat(id);
                 const chats = await getChatById();
                 chats.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
@@ -75,7 +75,7 @@ module.exports = io => {
                 };
                 createMessage(params);
                 userChats.push(params);
-                io.emit(`${parentChat}_MESSAGE_RECEIVED`, params);
+                io.emit(`${id}_MESSAGE_RECEIVED`, params);
             }
             if(!userId) return;
             await Executive.findByIdAndUpdate(userId, {
