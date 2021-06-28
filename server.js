@@ -28,7 +28,7 @@ app.use('/cleanup', async (req, res) => {
     // const titles = '0123456789abcdef';
     // const docs = titles.split('').map(t => ({ title: t, createdAt: new Date() }));
     // await Chat.insertMany(docs);
-    await Message.deleteMany({ content: 'User have left the chat' });
+    // await Message.deleteMany({ content: 'User have left the chat' });
     res.send('cleanup complete');
 });
 

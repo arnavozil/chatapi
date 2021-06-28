@@ -8,6 +8,7 @@ const schema = new Schema({
     title: { type: String, required: true },
     isReviewed: { type: Boolean, default: false },
     userSocket: { type: String, default: '' },
+    username: { type: String, required: true },
     response: { type: String, default: 'started' } // enum [accepted, started, ended]
 });
 

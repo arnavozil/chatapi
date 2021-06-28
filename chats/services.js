@@ -5,7 +5,7 @@ const { findLastMessage } = require('./../messages/services');
 const moment = require('moment');
 const { randomWord } = require('../helpers/utils');
 
-const initiateChat = async ({chatTitle: title, createdAt}) => {
+const initiateChat = async ({chatTitle: title, createdAt, username}) => {
     if(!title) throw 'Please provide an explanation for your query';
     let referenceId = moment(createdAt).format('DDMMYYYY') + randomWord();
     let doc = await Chat.findOne({ referenceId });
@@ -13,7 +13,7 @@ const initiateChat = async ({chatTitle: title, createdAt}) => {
         referenceId = moment(createdAt).format('DDMMYYYY') + randomWord();
         doc = await Chat.findOne({ referenceId });
     };
-    const chat = new Chat({ title, createdAt, referenceId });
+    const chat = new Chat({ title, createdAt, referenceId, username });
     const savedChat = await chat.save();
     return { chat: savedChat };
 };
